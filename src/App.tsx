@@ -1,10 +1,17 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ImageGallery from "./components/ImageGallery";
+
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header"></header>
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        <header className="App-header"></header>
 
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-    </div>
+        <ImageGallery />
+      </div>
+    </QueryClientProvider>
   );
 }
 

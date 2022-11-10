@@ -29,3 +29,6 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### How to run project.
+
+1. Create an `.env` file in the root of the project. Base it on `.env.example`. Add your own Access Key from Unsplash.
