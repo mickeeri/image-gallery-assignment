@@ -6,11 +6,9 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="App">
-        <header className="App-header"></header>
-
+      <main className="antialiased mx-auto md:max-w-5xl">
         <ImageGallery />
-      </div>
+      </main>
     </QueryClientProvider>
   );
 }

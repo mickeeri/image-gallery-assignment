@@ -4,12 +4,21 @@ function ImageGallery() {
   const { data, isLoading, isError } = useImageApi();
 
   return (
-    <div>
+    <div className="mt-8">
       {isLoading ? "loading" : null}
       {isError ? "Oh there was an error" : null}
 
-      <pre>{JSON.stringify(data)}</pre>
-      <h1>Images</h1>
+      <ul className="columns-3 gap-6">
+        {(data || []).map(({ id, urls, altDescription }) => (
+          <li key={id} className="mb-6">
+            <img
+              className="w-full aspect-auto rounded"
+              src={urls.small}
+              alt={altDescription || ""}
+            />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
