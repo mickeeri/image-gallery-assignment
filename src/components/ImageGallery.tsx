@@ -4,11 +4,11 @@ function ImageGallery() {
   const { data, isLoading, isError } = useImageApi();
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 mx-8 md:mx-0">
       {isLoading ? "loading" : null}
       {isError ? "Oh there was an error" : null}
 
-      <ul className="columns-3 gap-6">
+      <ul className="sm:columns-2 md:columns-3 lg:columns-4 gap-6">
         {(data || []).map(({ id, urls, altDescription }) => (
           <li key={id} className="mb-6">
             <img
