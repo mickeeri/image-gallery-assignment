@@ -21,7 +21,7 @@ function ImageGallery() {
         {data?.pages.map((page, i) => (
           <React.Fragment key={i}>
             {page.images.map(({ id, urls, altDescription }) => (
-              <li className="h-72 md:h-64" key={id}>
+              <li className="h-72 md:h-64 lg:h-80" key={id}>
                 <img
                   className="w-full aspect-auto rounded object-cover h-full border border-teal-200"
                   src={urls.small}

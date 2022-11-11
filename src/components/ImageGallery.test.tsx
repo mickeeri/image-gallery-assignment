@@ -1,13 +1,12 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import ImageGallery from "./ImageGallery";
 import { rest } from "msw";
 import { mockIntersectionObserver } from "jsdom-testing-mocks";
 import userEvent from "@testing-library/user-event";
 import { server } from "../mocks/server";
+import QueryClientWrapper from "./QueryClientWrapper";
 
 mockIntersectionObserver();
-const queryClient = new QueryClient();
 
 beforeAll(() => {
   server.listen();
@@ -22,11 +21,7 @@ afterAll(() => {
 });
 
 function setup() {
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <ImageGallery />
-    </QueryClientProvider>
-  );
+  return render(<ImageGallery />, { wrapper: QueryClientWrapper });
 }
 
 it("renders some images", async () => {

@@ -1,15 +1,13 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ImageGallery from "./components/ImageGallery";
-
-const queryClient = new QueryClient();
+import QueryClientWrapper from "./components/QueryClientWrapper";
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientWrapper>
       <main className="antialiased mx-auto md:max-w-5xl">
         <ImageGallery />
       </main>
-    </QueryClientProvider>
+    </QueryClientWrapper>
   );
 }
 

@@ -7,7 +7,10 @@ function buildImage(): Image {
   return {
     altDescription: "",
     id: faker.datatype.uuid(),
-    urls: { small: faker.image.imageUrl() },
+    urls: {
+      small: faker.image.imageUrl(),
+      regular: faker.image.imageUrl(),
+    },
   };
 }
 
