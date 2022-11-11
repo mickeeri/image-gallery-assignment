@@ -1,22 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { camelizeKeys } from "humps";
-import z from "zod";
-
-const ImageSchema = z.object({
-  id: z.string(),
-  altDescription: z.string().nullable(),
-  urls: z.object({ small: z.string().url() }),
-});
-
-const ImageListSchema = z.array(ImageSchema);
-
-const ImageResponseSchema = z.object({
-  nextUrl: z.string().url().optional(),
-  prevUrl: z.string().url().optional(),
-  images: ImageListSchema,
-});
-
-type ImageResponse = z.infer<typeof ImageResponseSchema>;
+import { ImageResponse, ImageResponseSchema } from "../types";
 
 async function handleError(res: Response) {
   if (!res.ok) {
@@ -26,9 +10,12 @@ async function handleError(res: Response) {
   return res;
 }
 
-async function parseResponse(res: Response) {
-  const images = await res.json();
-  const link = res.headers.get("link") || "";
+function getNextPageUrlFromLinkHeader(res: Response) {
+  const link = res.headers.get("link");
+
+  if (!link) {
+    return undefined;
+  }
 
   const pageInfo = link.split(",").map((part) => {
     let [url, rel] = part.split(";");
@@ -37,10 +24,12 @@ async function parseResponse(res: Response) {
     return { url, rel };
   });
 
-  const nextUrl = pageInfo.find(({ rel }) => rel === "next")?.url;
-  const prevUrl = pageInfo.find(({ rel }) => rel === "prev")?.url;
+  return pageInfo.find(({ rel }) => rel === "next")?.url;
+}
 
-  return { images, nextUrl, prevUrl };
+async function parseResponse(res: Response) {
+  const images = await res.json();
+  return { images, nextUrl: getNextPageUrlFromLinkHeader(res) };
 }
 
 function makeFetchRequest(
@@ -57,6 +46,7 @@ function makeFetchRequest(
 export function useImageApi() {
   return useInfiniteQuery({
     queryKey: ["photos"],
+    retry: false,
     getNextPageParam: (page: ImageResponse) => page.nextUrl,
     queryFn: ({ pageParam }) =>
       makeFetchRequest(pageParam)

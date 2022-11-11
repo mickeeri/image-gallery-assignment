@@ -12,14 +12,12 @@ function ImageGallery() {
     }
   }, [fetchNextPage, inView]);
 
-  // TODO: handle if slow response
-
   return (
     <div className="mt-8 mx-8 md:mx-0">
       {isLoading ? "loading" : null}
 
       {/* <ul className="sm:columns-2 md:columns-3 lg:columns-4 gap-6"> */}
-      <ul className="grid grid-cols-4 gap-6">
+      <ul className="grid sm:columns-2 md:columns-3 lg:grid-cols-4 gap-6">
         {data?.pages.map((page, i) => (
           <React.Fragment key={i}>
             {page.images.map(({ id, urls, altDescription }) => (
