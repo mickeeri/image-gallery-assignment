@@ -39,12 +39,21 @@ function ImageGallery() {
         {isError && !showLoader ? (
           <p role="alert" className="text-red-700">
             There was an error loading more images!{" "}
-            <button onClick={() => fetchNextPage()}>Try again</button>
+            <button
+              className="text-sky-700 hover:text-sky-900"
+              onClick={() => fetchNextPage()}
+            >
+              Try again
+            </button>
           </p>
         ) : null}
 
         {!isError && !showLoader ? (
-          <button ref={ref} onClick={() => fetchNextPage()}>
+          <button
+            className="text-sky-700 hover:text-sky-900"
+            ref={ref}
+            onClick={() => fetchNextPage()}
+          >
             Load more
           </button>
         ) : null}

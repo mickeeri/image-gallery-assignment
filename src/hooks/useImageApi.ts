@@ -17,6 +17,8 @@ function getNextPageUrlFromLinkHeader(res: Response) {
     return undefined;
   }
 
+  // This could perhaps have been less complicated but
+  // it's good if we want to retrieve the prev and last page later.
   const pageInfo = link.split(",").map((part) => {
     let [url, rel] = part.split(";");
     url = url.trim().slice(1, -1);
