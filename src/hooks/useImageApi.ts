@@ -1,27 +1,51 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { camelizeKeys } from "humps";
 import z from "zod";
 
 const ImageSchema = z.object({
   id: z.string(),
   altDescription: z.string().nullable(),
-  urls: z.object({
-    thumb: z.string().url(),
-    small: z.string().url(),
-    regular: z.string().url(),
-  }),
+  urls: z.object({ small: z.string().url() }),
 });
 
 const ImageListSchema = z.array(ImageSchema);
 
-const jsonParse = (res: Response) => res.json();
+const ImageResponseSchema = z.object({
+  nextUrl: z.string().url().optional(),
+  prevUrl: z.string().url().optional(),
+  images: ImageListSchema,
+});
 
-function makeFetchRequest() {
-  const url = new URL("https://api.unsplash.com/photos");
-  const params = new URLSearchParams({ per_page: "20" }).toString();
+type ImageResponse = z.infer<typeof ImageResponseSchema>;
 
-  url.search = params;
+async function handleError(res: Response) {
+  if (!res.ok) {
+    throw new Error({ status: res.status, ...(await res.json()) });
+  }
 
+  return res;
+}
+
+async function parseResponse(res: Response) {
+  const images = await res.json();
+  const link = res.headers.get("link") || "";
+
+  const pageInfo = link.split(",").map((part) => {
+    let [url, rel] = part.split(";");
+    url = url.trim().slice(1, -1);
+    rel = rel.trim().split(/['"]/)[1];
+    return { url, rel };
+  });
+
+  const nextUrl = pageInfo.find(({ rel }) => rel === "next")?.url;
+  const prevUrl = pageInfo.find(({ rel }) => rel === "prev")?.url;
+
+  return { images, nextUrl, prevUrl };
+}
+
+function makeFetchRequest(
+  url = "https://api.unsplash.com/photos?page=1&per_page=20"
+) {
   return fetch(url, {
     headers: {
       Authorization: `Client-ID ${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`,
@@ -31,13 +55,14 @@ function makeFetchRequest() {
 }
 
 export function useImageApi() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["photos"],
-    retry: false,
-    queryFn: () =>
-      makeFetchRequest()
-        .then(jsonParse)
+    getNextPageParam: (page: ImageResponse) => page.nextUrl,
+    queryFn: ({ pageParam }) =>
+      makeFetchRequest(pageParam)
+        .then(handleError)
+        .then(parseResponse)
         .then(camelizeKeys)
-        .then(ImageListSchema.parse),
+        .then(ImageResponseSchema.parse),
   });
 }
